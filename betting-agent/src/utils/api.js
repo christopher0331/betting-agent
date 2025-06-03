@@ -128,3 +128,23 @@ export const updateAnalysisOutcome = (analysisId, outcome, roi) => {
   }
   return false;
 };
+
+/**
+ * Fetch MLB schedule data from the server
+ * @param {string} [date] - Date in YYYY-MM-DD format
+ * @returns {Promise<Array>} Array of game objects
+ */
+export const fetchMLBSchedule = async (date) => {
+  try {
+    const query = date ? `?date=${date}` : '';
+    const res = await fetch(`/api/mlb/schedule${query}`);
+    if (!res.ok) {
+      throw new Error('Failed to fetch MLB schedule');
+    }
+    const data = await res.json();
+    return data.games || [];
+  } catch (error) {
+    console.error('Error fetching MLB schedule:', error);
+    throw error;
+  }
+};
