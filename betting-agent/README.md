@@ -37,7 +37,11 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 ## MLB Data Integration
 
+- **Schedule** – `/api/mlb/schedule?date=YYYY-MM-DD` returns the list of games for a given date.
+- **Stats** – `/api/mlb/stats?teamId=###&season=YYYY` (or `playerId`) returns season stats for a team or player.
+
 The project includes a basic API route that proxies data from the public [MLB Stats API](https://statsapi.mlb.com/). You can request the current schedule via `/api/mlb/schedule?date=YYYY-MM-DD` and display the games inside the app.
+
 
 ## Disclaimers
 

@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { fetchMLBSchedule } from '@/utils/api';
+
+import { fetchMLBSchedule, fetchMLBStats } from '@/utils/api';
 
 export default function Events() {
   // Sport filter state
@@ -9,6 +10,7 @@ export default function Events() {
 
   // Events state
   const [events, setEvents] = useState([]);
+  const [statsMap, setStatsMap] = useState({});
 
   // Sample events data - in a real app, this would come from an API
   const defaultEvents = [
@@ -142,6 +144,8 @@ export default function Events() {
             teams: `${g.teams.away.team.name} vs ${g.teams.home.team.name}`,
             date: g.gameDate,
             venue: g.venue?.name || '',
+            homeTeamId: g.teams.home.team.id,
+            season: g.season,
             odds: {}
           }));
           setEvents(mlbEvents);
@@ -156,6 +160,17 @@ export default function Events() {
 
     loadEvents();
   }, [selectedSport]);
+
+  // Fetch stats for a specific team and store in statsMap
+  const loadStats = async (eventId, teamId, season) => {
+    try {
+      const stats = await fetchMLBStats({ teamId, season });
+      setStatsMap(prev => ({ ...prev, [eventId]: stats }));
+    } catch (err) {
+      console.error('Failed to load team stats', err);
+    }
+  };
+
   
 
   // Filter events by sport
@@ -250,6 +265,14 @@ export default function Events() {
                         >
                           Analyze Event
                         </a>
+                        {event.sport === 'baseball' && (
+                          <button
+                            onClick={() => loadStats(event.id, event.homeTeamId, new Date(event.date).getFullYear())}
+                            className="mt-2 inline-flex items-center px-3 py-1.5 border border-gray-300 dark:border-gray-600 text-xs rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                          >
+                            View Stats
+                          </button>
+                        )}
                       </div>
                     </div>
                     
@@ -269,13 +292,23 @@ export default function Events() {
                         </div>
                       )}
                       
-                      {event.odds.over_under && (
+                    {event.odds.over_under && (
                         <div className="bg-gray-50 dark:bg-gray-900 rounded-md px-3 py-2">
                           <div className="text-xs text-gray-500 dark:text-gray-400">Over/Under</div>
                           <div className="text-sm font-medium text-gray-900 dark:text-white">{event.odds.over_under}</div>
                         </div>
                       )}
                     </div>
+
+                    {/* Team Stats Display */}
+                    {statsMap[event.id] && (
+                      <div className="mt-4 text-sm text-gray-700 dark:text-gray-300">
+                        <p className="font-medium">Home Team Stats:</p>
+                        <p>AVG: {statsMap[event.id][0]?.splits?.[0]?.stat?.avg}</p>
+                        <p>Runs: {statsMap[event.id][0]?.splits?.[0]?.stat?.runs}</p>
+                        <p>Home Runs: {statsMap[event.id][0]?.splits?.[0]?.stat?.homeRuns}</p>
+                      </div>
+                    )}
                   </div>
                 </li>
               ))}
