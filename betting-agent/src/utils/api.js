@@ -128,3 +128,49 @@ export const updateAnalysisOutcome = (analysisId, outcome, roi) => {
   }
   return false;
 };
+
+/**
+ * Fetch MLB schedule data from the server
+ * @param {string} [date] - Date in YYYY-MM-DD format
+ * @returns {Promise<Array>} Array of game objects
+ */
+export const fetchMLBSchedule = async (date) => {
+  try {
+    const query = date ? `?date=${date}` : '';
+    const res = await fetch(`/api/mlb/schedule${query}`);
+    if (!res.ok) {
+      throw new Error('Failed to fetch MLB schedule');
+    }
+    const data = await res.json();
+    return data.games || [];
+  } catch (error) {
+    console.error('Error fetching MLB schedule:', error);
+    throw error;
+  }
+};
+
+/**
+ * Fetch MLB team or player stats from the server
+ * @param {Object} params - Query parameters
+ * @param {string} [params.teamId] - Team ID
+ * @param {string} [params.playerId] - Player ID
+ * @param {string} [params.season] - Season year (defaults to current year)
+ * @returns {Promise<Array>} Array of stats objects
+ */
+export const fetchMLBStats = async ({ teamId, playerId, season } = {}) => {
+  try {
+    const query = new URLSearchParams();
+    if (teamId) query.append('teamId', teamId);
+    if (playerId) query.append('playerId', playerId);
+    if (season) query.append('season', season);
+    const res = await fetch(`/api/mlb/stats?${query.toString()}`);
+    if (!res.ok) {
+      throw new Error('Failed to fetch MLB stats');
+    }
+    const data = await res.json();
+    return data.stats || [];
+  } catch (error) {
+    console.error('Error fetching MLB stats:', error);
+    throw error;
+  }
+};
