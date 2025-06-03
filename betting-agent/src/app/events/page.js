@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+
 import { fetchMLBSchedule, fetchMLBStats } from '@/utils/api';
 
 export default function Events() {
@@ -9,7 +10,6 @@ export default function Events() {
 
   // Events state
   const [events, setEvents] = useState([]);
-  // Map of eventId -> stats data
   const [statsMap, setStatsMap] = useState({});
 
   // Sample events data - in a real app, this would come from an API
@@ -170,6 +170,7 @@ export default function Events() {
       console.error('Failed to load team stats', err);
     }
   };
+
   
 
   // Filter events by sport
