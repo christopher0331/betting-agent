@@ -1,13 +1,17 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { fetchMLBSchedule } from '@/utils/api';
 
 export default function Events() {
   // Sport filter state
   const [selectedSport, setSelectedSport] = useState('all');
-  
+
+  // Events state
+  const [events, setEvents] = useState([]);
+
   // Sample events data - in a real app, this would come from an API
-  const events = [
+  const defaultEvents = [
     {
       id: 1,
       sport: 'football',
@@ -121,6 +125,38 @@ export default function Events() {
       }
     },
   ];
+
+
+
+  // Load initial events and refresh when sport changes
+  useEffect(() => {
+    async function loadEvents() {
+      if (selectedSport === 'baseball') {
+        try {
+          const games = await fetchMLBSchedule();
+          const mlbEvents = games.map((g) => ({
+            id: g.gamePk,
+            sport: 'baseball',
+            sportName: 'Baseball',
+            league: g.league?.name || 'MLB',
+            teams: `${g.teams.away.team.name} vs ${g.teams.home.team.name}`,
+            date: g.gameDate,
+            venue: g.venue?.name || '',
+            odds: {}
+          }));
+          setEvents(mlbEvents);
+        } catch (err) {
+          console.error('Failed to load MLB schedule', err);
+          setEvents([]);
+        }
+      } else {
+        setEvents(defaultEvents);
+      }
+    }
+
+    loadEvents();
+  }, [selectedSport]);
+  
 
   // Filter events by sport
   const filteredEvents = selectedSport === 'all' 

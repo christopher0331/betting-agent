@@ -34,3 +34,13 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## MLB Data Integration
+
+The project includes a basic API route that proxies data from the public [MLB Stats API](https://statsapi.mlb.com/). You can request the current schedule via `/api/mlb/schedule?date=YYYY-MM-DD` and display the games inside the app.
+
+## Disclaimers
+
+- Game schedules and stats come from third‑party sources and may be incomplete or inaccurate.
+- AI generated analyses are for entertainment purposes only and do not constitute betting advice.
+- Use the application responsibly and at your own risk.
