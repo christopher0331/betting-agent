@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { getBettingHistory } from '@/utils/api';
 
 export default function History() {
   const [filter, setFilter] = useState('all');
@@ -10,108 +11,9 @@ export default function History() {
   
   // Load saved analyses on component mount
   useEffect(() => {
-    // In a real app, this would come from a database
-    // Here we'll simulate getting it from localStorage
-    const timer = setTimeout(() => {
-      const mockAnalyses = [
-        {
-          id: '12345',
-          date: '2025-05-28',
-          event: {
-            sport: 'Football',
-            league: 'NFL',
-            teams: 'Dallas Cowboys vs Philadelphia Eagles',
-          },
-          recommendation: 'Cowboys +3.5',
-          confidence: 0.84,
-          outcome: 'win',
-          roi: '+110',
-        },
-        {
-          id: '12346',
-          date: '2025-05-26',
-          event: {
-            sport: 'Basketball',
-            league: 'NBA',
-            teams: 'Los Angeles Lakers vs Golden State Warriors',
-          },
-          recommendation: 'Over 219.5',
-          confidence: 0.65,
-          outcome: 'loss',
-          roi: '-110',
-        },
-        {
-          id: '12347',
-          date: '2025-05-24',
-          event: {
-            sport: 'Baseball',
-            league: 'MLB',
-            teams: 'New York Yankees vs Boston Red Sox',
-          },
-          recommendation: 'Yankees ML',
-          confidence: 0.78,
-          outcome: 'win',
-          roi: '-105',
-        },
-        {
-          id: '12348',
-          date: '2025-05-22',
-          event: {
-            sport: 'Soccer',
-            league: 'Premier League',
-            teams: 'Arsenal vs Manchester United',
-          },
-          recommendation: 'Draw',
-          confidence: 0.52,
-          outcome: 'pending',
-          roi: '+240',
-        },
-        {
-          id: '12349',
-          date: '2025-05-20',
-          event: {
-            sport: 'Hockey',
-            league: 'NHL',
-            teams: 'Toronto Maple Leafs vs Montreal Canadiens',
-          },
-          recommendation: 'Under 5.5',
-          confidence: 0.71,
-          outcome: 'win',
-          roi: '-115',
-        },
-        {
-          id: '12350',
-          date: '2025-05-18',
-          event: {
-            sport: 'Football',
-            league: 'NFL',
-            teams: 'Buffalo Bills vs Miami Dolphins',
-          },
-          recommendation: 'Bills -2.5',
-          confidence: 0.68,
-          outcome: 'push',
-          roi: 'Even',
-        },
-        {
-          id: '12351',
-          date: '2025-05-16',
-          event: {
-            sport: 'Basketball',
-            league: 'NBA',
-            teams: 'Boston Celtics vs Milwaukee Bucks',
-          },
-          recommendation: 'Celtics -4.5',
-          confidence: 0.75,
-          outcome: 'loss',
-          roi: '-110',
-        },
-      ];
-      
-      setAnalyses(mockAnalyses);
-      setLoading(false);
-    }, 1000);
-    
-    return () => clearTimeout(timer);
+    const history = getBettingHistory();
+    setAnalyses(history);
+    setLoading(false);
   }, []);
   
   // Filter and sort analyses
