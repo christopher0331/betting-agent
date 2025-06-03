@@ -1,13 +1,43 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { getBettingHistory } from '@/utils/api';
 
 export function DashboardStats() {
-  // In a real application, this data would come from an API or database
-  const stats = [
-    { name: 'Total Analyses', stat: '12', change: '+2.5%', changeType: 'increase' },
-    { name: 'Success Rate', stat: '68%', change: '+4.2%', changeType: 'increase' },
-    { name: 'ROI', stat: '+12.3%', change: '+3.1%', changeType: 'increase' },
-    { name: 'Pending Decisions', stat: '3', change: '-1', changeType: 'decrease' },
-  ];
+  const [stats, setStats] = useState([
+    { name: 'Total Analyses', stat: '0' },
+    { name: 'Success Rate', stat: '0%' },
+    { name: 'Average ROI', stat: '0%' },
+    { name: 'Pending Decisions', stat: '0' },
+  ]);
+
+  useEffect(() => {
+    const history = getBettingHistory();
+
+    const total = history.length;
+    const completed = history.filter(h => h.outcome && h.outcome !== 'pending');
+    const wins = completed.filter(h => h.outcome === 'win').length;
+    const pending = history.filter(h => h.outcome === 'pending').length;
+
+    let avgRoi = 0;
+    if (completed.length > 0) {
+      const totalRoi = completed.reduce((sum, h) => {
+        const value = parseFloat(String(h.roi || '').replace(/[%+]/g, ''));
+        return !isNaN(value) ? sum + value : sum;
+      }, 0);
+      avgRoi = totalRoi / completed.length;
+    }
+
+    const newStats = [
+      { name: 'Total Analyses', stat: String(total) },
+      {
+        name: 'Success Rate',
+        stat: completed.length > 0 ? `${((wins / completed.length) * 100).toFixed(1)}%` : '0%',
+      },
+      { name: 'Average ROI', stat: `${avgRoi.toFixed(1)}%` },
+      { name: 'Pending Decisions', stat: String(pending) },
+    ];
+
+    setStats(newStats);
+  }, []);
 
   return (
     <div>
@@ -44,25 +74,6 @@ export function DashboardStats() {
             </dt>
             <dd className="ml-16 flex items-baseline">
               <p className="text-2xl font-semibold text-gray-900 dark:text-white">{item.stat}</p>
-              <p
-                className={`ml-2 flex items-baseline text-sm font-semibold ${
-                  item.changeType === 'increase' ? 'text-green-600' : 'text-red-600'
-                }`}
-              >
-                {item.changeType === 'increase' ? (
-                  <svg className="self-center flex-shrink-0 h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                  </svg>
-                ) : (
-                  <svg className="self-center flex-shrink-0 h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path fillRule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                )}
-                <span className="sr-only">
-                  {item.changeType === 'increase' ? 'Increased' : 'Decreased'} by
-                </span>
-                {item.change}
-              </p>
             </dd>
           </div>
         ))}

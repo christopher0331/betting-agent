@@ -1,37 +1,32 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { fetchMLBSchedule } from '@/utils/api';
 
 export function UpcomingEvents() {
-  // Sample data - in a real app, this would come from a sports API
-  const events = [
-    {
-      id: 1,
-      league: 'NFL',
-      teams: 'Kansas City Chiefs vs San Francisco 49ers',
-      date: '2025-06-15T20:00:00',
-      type: 'football'
-    },
-    {
-      id: 2,
-      league: 'NBA',
-      teams: 'Boston Celtics vs Los Angeles Lakers',
-      date: '2025-06-10T19:30:00',
-      type: 'basketball'
-    },
-    {
-      id: 3,
-      league: 'MLB',
-      teams: 'New York Yankees vs Boston Red Sox',
-      date: '2025-06-07T13:00:00',
-      type: 'baseball'
-    },
-    {
-      id: 4,
-      league: 'Premier League',
-      teams: 'Manchester City vs Liverpool',
-      date: '2025-06-12T15:00:00',
-      type: 'soccer'
-    },
-  ];
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const games = await fetchMLBSchedule();
+        const mapped = games.map((g) => ({
+          id: g.gamePk,
+          league: g.league?.name || 'MLB',
+          teams: `${g.teams.away.team.name} vs ${g.teams.home.team.name}`,
+          date: g.gameDate,
+          type: 'baseball',
+        }));
+        setEvents(mapped);
+      } catch (e) {
+        console.error('Failed to load events', e);
+        setEvents([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    load();
+  }, []);
 
   // Format date for display
   const formatDate = (dateString) => {
@@ -77,33 +72,37 @@ export function UpcomingEvents() {
 
   return (
     <div className="mt-4">
-      <ul className="divide-y divide-gray-200 dark:divide-gray-700">
-        {events.map((event) => (
-          <li key={event.id} className="py-4">
-            <div className="flex items-center space-x-4">
-              <div className="flex-shrink-0">
-                {getSportIcon(event.type)}
+      {loading ? (
+        <p className="text-sm text-gray-500 dark:text-gray-400">Loading events...</p>
+      ) : events.length === 0 ? (
+        <p className="text-sm text-gray-500 dark:text-gray-400">No upcoming events found.</p>
+      ) : (
+        <ul className="divide-y divide-gray-200 dark:divide-gray-700">
+          {events.map((event) => (
+            <li key={event.id} className="py-4">
+              <div className="flex items-center space-x-4">
+                <div className="flex-shrink-0">{getSportIcon(event.type)}</div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                    {event.teams}
+                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    {event.league} • {formatDate(event.date)}
+                  </p>
+                </div>
+                <div>
+                  <a
+                    href={`/analysis/new?event=${event.id}`}
+                    className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-indigo-600 hover:bg-indigo-700"
+                  >
+                    Analyze
+                  </a>
+                </div>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                  {event.teams}
-                </p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {event.league} • {formatDate(event.date)}
-                </p>
-              </div>
-              <div>
-                <a
-                  href={`/analysis/new?event=${event.id}`}
-                  className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-indigo-600 hover:bg-indigo-700"
-                >
-                  Analyze
-                </a>
-              </div>
-            </div>
-          </li>
-        ))}
-      </ul>
+            </li>
+          ))}
+        </ul>
+      )}
       <div className="mt-6 text-center">
         <a href="/events" className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
           View All Events

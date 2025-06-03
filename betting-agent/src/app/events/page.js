@@ -12,128 +12,13 @@ export default function Events() {
   const [events, setEvents] = useState([]);
   const [statsMap, setStatsMap] = useState({});
 
-  // Sample events data - in a real app, this would come from an API
-  const defaultEvents = [
-    {
-      id: 1,
-      sport: 'football',
-      sportName: 'Football',
-      league: 'NFL',
-      teams: 'Kansas City Chiefs vs San Francisco 49ers',
-      date: '2025-06-15T20:00:00',
-      venue: 'Arrowhead Stadium',
-      odds: {
-        favorite: 'Chiefs -3.5',
-        underdog: '49ers +3.5',
-        over_under: 49.5
-      }
-    },
-    {
-      id: 2,
-      sport: 'basketball',
-      sportName: 'Basketball',
-      league: 'NBA',
-      teams: 'Boston Celtics vs Los Angeles Lakers',
-      date: '2025-06-10T19:30:00',
-      venue: 'TD Garden',
-      odds: {
-        favorite: 'Celtics -5.5',
-        underdog: 'Lakers +5.5',
-        over_under: 219.5
-      }
-    },
-    {
-      id: 3,
-      sport: 'baseball',
-      sportName: 'Baseball',
-      league: 'MLB',
-      teams: 'New York Yankees vs Boston Red Sox',
-      date: '2025-06-07T13:00:00',
-      venue: 'Yankee Stadium',
-      odds: {
-        favorite: 'Yankees -1.5',
-        underdog: 'Red Sox +1.5',
-        over_under: 8.5
-      }
-    },
-    {
-      id: 4,
-      sport: 'soccer',
-      sportName: 'Soccer',
-      league: 'Premier League',
-      teams: 'Manchester City vs Liverpool',
-      date: '2025-06-12T15:00:00',
-      venue: 'Etihad Stadium',
-      odds: {
-        favorite: 'Man City -0.5',
-        underdog: 'Liverpool +0.5',
-        over_under: 2.5
-      }
-    },
-    {
-      id: 5,
-      sport: 'hockey',
-      sportName: 'Hockey',
-      league: 'NHL',
-      teams: 'Toronto Maple Leafs vs Montreal Canadiens',
-      date: '2025-06-08T19:00:00',
-      venue: 'Scotiabank Arena',
-      odds: {
-        favorite: 'Maple Leafs -1.5',
-        underdog: 'Canadiens +1.5',
-        over_under: 5.5
-      }
-    },
-    {
-      id: 6,
-      sport: 'golf',
-      sportName: 'Golf',
-      league: 'PGA Tour',
-      teams: 'The Masters Tournament',
-      date: '2025-06-20T08:00:00',
-      venue: 'Augusta National Golf Club',
-      odds: {
-        favorite: 'Scottie Scheffler +800',
-        underdog: 'Jordan Spieth +2000',
-        over_under: null
-      }
-    },
-    {
-      id: 7,
-      sport: 'mma',
-      sportName: 'MMA',
-      league: 'UFC',
-      teams: 'Jon Jones vs Francis Ngannou',
-      date: '2025-06-17T22:00:00',
-      venue: 'T-Mobile Arena',
-      odds: {
-        favorite: 'Jones -150',
-        underdog: 'Ngannou +130',
-        over_under: '3.5 rounds'
-      }
-    },
-    {
-      id: 8,
-      sport: 'tennis',
-      sportName: 'Tennis',
-      league: 'Grand Slam',
-      teams: 'Carlos Alcaraz vs Novak Djokovic',
-      date: '2025-06-25T14:00:00',
-      venue: 'Wimbledon',
-      odds: {
-        favorite: 'Alcaraz -125',
-        underdog: 'Djokovic +105',
-        over_under: '38.5 games'
-      }
-    },
-  ];
 
 
 
   // Load initial events and refresh when sport changes
   useEffect(() => {
     async function loadEvents() {
-      if (selectedSport === 'baseball') {
+      if (selectedSport === 'baseball' || selectedSport === 'all') {
         try {
           const games = await fetchMLBSchedule();
           const mlbEvents = games.map((g) => ({
@@ -154,7 +39,7 @@ export default function Events() {
           setEvents([]);
         }
       } else {
-        setEvents(defaultEvents);
+        setEvents([]);
       }
     }
 

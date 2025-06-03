@@ -1,41 +1,14 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { getBettingHistory } from '@/utils/api';
 
 export function RecentAnalyses() {
-  // Sample data - in a real app, this would come from a database
-  const analyses = [
-    {
-      id: 1,
-      event: 'Dallas Cowboys vs Philadelphia Eagles',
-      date: '2025-05-28',
-      recommendation: 'Cowboys +3.5',
-      confidence: 'high',
-      result: 'win'
-    },
-    {
-      id: 2,
-      event: 'Los Angeles Lakers vs Golden State Warriors',
-      date: '2025-05-26',
-      recommendation: 'Over 219.5',
-      confidence: 'medium',
-      result: 'loss'
-    },
-    {
-      id: 3,
-      event: 'New York Yankees vs Boston Red Sox',
-      date: '2025-05-24',
-      recommendation: 'Yankees ML',
-      confidence: 'high',
-      result: 'win'
-    },
-    {
-      id: 4,
-      event: 'Arsenal vs Manchester United',
-      date: '2025-05-22',
-      recommendation: 'Draw',
-      confidence: 'low',
-      result: 'pending'
-    },
-  ];
+  const [analyses, setAnalyses] = useState([]);
+
+  useEffect(() => {
+    const history = getBettingHistory();
+    const sorted = [...history].sort((a, b) => new Date(b.date) - new Date(a.date));
+    setAnalyses(sorted.slice(0, 4));
+  }, []);
 
   const getConfidenceBadge = (confidence) => {
     switch(confidence) {
